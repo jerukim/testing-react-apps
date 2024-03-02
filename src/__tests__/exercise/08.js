@@ -2,6 +2,7 @@
 // http://localhost:3000/counter-hook
 
 import * as React from 'react'
+import {act} from 'react-dom/test-utils'
 import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import useCounter from '../../components/use-counter'
@@ -32,6 +33,38 @@ test('exposes the count and increment/decrement functions', async () => {
 
   await userEvent.click(decrement)
   expect(message).toHaveTextContent('Count: 0')
+})
+
+test('allows customization of the initial count', () => {
+  const initialCount = 5
+
+  let result
+  function TestComponent(props) {
+    result = useCounter(props)
+    return null
+  }
+
+  render(<TestComponent initialCount={initialCount} />)
+
+  expect(result.count).toEqual(initialCount)
+})
+
+test('allows customization of the step', () => {
+  const step = 5
+
+  let result
+  function TestComponent(props) {
+    result = useCounter(props)
+    return null
+  }
+
+  render(<TestComponent step={step} />)
+
+  act(() => result.increment())
+  expect(result.count).toEqual(step)
+
+  act(() => result.decrement())
+  expect(result.count).toEqual(0)
 })
 
 /* eslint no-unused-vars:0 */
