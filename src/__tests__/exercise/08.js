@@ -19,6 +19,19 @@ function Counter() {
   )
 }
 
+function setup({initialProps} = {}) {
+  let result = {}
+
+  const TestComponent = props => {
+    result.current = useCounter(props)
+    return null
+  }
+
+  render(<TestComponent {...initialProps} />)
+
+  return result
+}
+
 test('exposes the count and increment/decrement functions', async () => {
   render(<Counter />)
 
@@ -38,33 +51,23 @@ test('exposes the count and increment/decrement functions', async () => {
 test('allows customization of the initial count', () => {
   const initialCount = 5
 
-  let result
-  function TestComponent(props) {
-    result = useCounter(props)
-    return null
-  }
+  const result = setup({initialProps: {initialCount}})
 
-  render(<TestComponent initialCount={initialCount} />)
-
-  expect(result.count).toEqual(initialCount)
+  expect(result.current.count).toEqual(initialCount)
 })
 
-test('allows customization of the step', () => {
+test('allows customization of the step', async () => {
   const step = 5
 
-  let result
-  function TestComponent(props) {
-    result = useCounter(props)
-    return null
-  }
+  const result = setup({initialProps: {step}})
 
-  render(<TestComponent step={step} />)
+  expect(result.current.count).toEqual(0)
 
-  act(() => result.increment())
-  expect(result.count).toEqual(step)
+  act(() => result.current.increment())
+  expect(result.current.count).toEqual(step)
 
-  act(() => result.decrement())
-  expect(result.count).toEqual(0)
+  act(() => result.current.decrement())
+  expect(result.current.count).toEqual(0)
 })
 
 /* eslint no-unused-vars:0 */
