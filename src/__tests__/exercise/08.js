@@ -3,7 +3,7 @@
 
 import * as React from 'react'
 import {act} from 'react-dom/test-utils'
-import {render, screen} from '@testing-library/react'
+import {render, screen, renderHook} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import useCounter from '../../components/use-counter'
 
@@ -17,19 +17,6 @@ function Counter() {
       <button onClick={decrement}>decrement</button>
     </div>
   )
-}
-
-function setup({initialProps} = {}) {
-  let result = {}
-
-  const TestComponent = props => {
-    result.current = useCounter(props)
-    return null
-  }
-
-  render(<TestComponent {...initialProps} />)
-
-  return result
 }
 
 test('exposes the count and increment/decrement functions', async () => {
@@ -51,7 +38,7 @@ test('exposes the count and increment/decrement functions', async () => {
 test('allows customization of the initial count', () => {
   const initialCount = 5
 
-  const result = setup({initialProps: {initialCount}})
+  const {result} = renderHook(() => useCounter({initialCount}))
 
   expect(result.current.count).toEqual(initialCount)
 })
@@ -59,7 +46,7 @@ test('allows customization of the initial count', () => {
 test('allows customization of the step', async () => {
   const step = 5
 
-  const result = setup({initialProps: {step}})
+  const {result} = renderHook(() => useCounter({step}))
 
   expect(result.current.count).toEqual(0)
 
